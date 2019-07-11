@@ -1,0 +1,25 @@
+// Required to customize bootstrap files
+@import 'node_modules/bootstrap/scss/functions';
+@import 'node_modules/bootstrap/scss/variables';
+@import 'node_modules/bootstrap/scss/mixins';
+// ---
+
+// Bootstrap styles used by multiple components
+@import 'node_modules/bootstrap/scss/utilities';
+
+::-webkit-scrollbar {
+  width: 8px;
+  border-radius: 50%;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b7b7b7;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #838383;
+}
