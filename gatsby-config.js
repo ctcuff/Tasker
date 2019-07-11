@@ -26,5 +26,6 @@ module.exports = {
     'gatsby-plugin-sass',
     'gatsby-plugin-react-helmet',
     'gatsby-plugin-flow',
+    'gatsby-plugin-typescript'
   ],
 };
