@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import app from 'firebase/app';
 import firebaseConfig from 'components/config';
 import 'firebase/auth';
@@ -12,25 +12,31 @@ const FirebaseContext = React.createContext(null);
 
 // Injects an instance of the Firebase class into
 // a component
-const wrapWithFirebase = Component => props => (
-  <FirebaseContext.Consumer>
-    {(firebase: Firebase) => (
-      <Component firebaseInstance={firebase} {...props} />
-    )}
-  </FirebaseContext.Consumer>
-);
+const wrapWithFirebase = function(Component) {
+  return function(props) {
+    return (
+      <FirebaseContext.Consumer>
+        {(firebase: Firebase) => (
+          <Component firebaseInstance={firebase} {...props} />
+        )}
+      </FirebaseContext.Consumer>
+    );
+  };
+};
 
 class Firebase {
   public readonly auth: Auth;
 
   constructor() {
-    if (typeof window !== 'undefined') {
-      app.initializeApp(firebaseConfig);
-      this.auth = app.auth();
+    if (typeof window === 'undefined') {
+      return;
     }
+    app.initializeApp(firebaseConfig);
+    this.auth = app.auth();
+
   }
 
-  createUserWithEmailAndPassword(
+  public createUserWithEmailAndPassword(
     email: string,
     password: string
   ): Promise<UserCredential> {
@@ -39,14 +45,14 @@ class Firebase {
     );
   }
 
-  signInWithEmailAndPassword(
+  public signInWithEmailAndPassword(
     email: string,
     password: string
   ): Promise<UserCredential> {
     return this.auth && this.auth.signInWithEmailAndPassword(email, password);
   }
 
-  signOut(): Promise<void> {
+  public signOut(): Promise<void> {
     return this.auth && this.auth.signOut();
   }
 }

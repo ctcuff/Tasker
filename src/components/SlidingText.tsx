@@ -64,10 +64,10 @@ const SlidingVertical = styled.div`
   }
 `;
 
-type SlidingTextProps = {
+interface SlidingTextProps {
   staticText: string;
   wordList: string[];
-};
+}
 
 const SlidingText = ({ staticText, wordList }: SlidingTextProps) => (
   <Wrapper>

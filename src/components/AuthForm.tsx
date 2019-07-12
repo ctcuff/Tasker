@@ -38,12 +38,12 @@ const StyledLink = styled(Link)`
   color: #6c63ff;
 `;
 
-type FormComponentProps = {
+interface FormComponentProps {
   onAuthButtonClick: () => void;
-  onTextChange: (e: any) => void;
+  onTextChange: (e: React.FormEvent<HTMLFormElement>) => void;
   isNewAccount: boolean;
   firebaseInstance: Firebase;
-};
+}
 
 const AuthForm = (props: FormComponentProps) => (
   <Container>
@@ -53,6 +53,7 @@ const AuthForm = (props: FormComponentProps) => (
       type="email"
       autoComplete="current-email"
       margin="normal"
+      // @ts-ignore
       onChange={props.onTextChange}
     />
     <StyledTextField

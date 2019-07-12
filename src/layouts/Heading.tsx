@@ -19,11 +19,11 @@ const StyledHeading = styled.h1`
   cursor: pointer;
 `;
 
-type HeadingProps = {
-  children: any | any[];
+interface HeadingProps {
+  children: JSX.Element | JSX.Element[];
   className?: string;
   subtext?: string;
-};
+}
 
 const Heading = ({ children, className, subtext }: HeadingProps) => (
   <div className={className}>

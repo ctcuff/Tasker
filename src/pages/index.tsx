@@ -7,25 +7,24 @@ import SlidingText from 'components/SlidingText';
 import Heading from 'layouts/Heading';
 import { wrapWithFirebase, Firebase } from 'components/FirebaseContext';
 import firebase from 'firebase';
-
-const image = require('static/undraw_task.svg');
+import image from 'static/undraw_task.svg';
 
 type FirebaseUser = firebase.User;
 type AuthObserver = firebase.Unsubscribe;
 
-type ButtonProps = {
+interface ButtonProps {
   isLoggedIn: boolean;
   onSignOutClick: () => void;
   onViewTasksClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
-};
+}
 
-type IndexProps = {
+interface IndexProps {
   firebaseInstance: Firebase;
-};
+}
 
-type IndexState = {
+interface IndexState {
   user: FirebaseUser | null;
-};
+}
 
 const ButtonGroup = (props: ButtonProps) =>
   props.isLoggedIn ? (

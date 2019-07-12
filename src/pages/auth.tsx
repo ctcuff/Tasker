@@ -5,9 +5,8 @@ import { Firebase, wrapWithFirebase } from 'components/FirebaseContext';
 import styled from 'styled-components';
 import { breakpointLg, breakpointSm } from 'components/styles/auth.style';
 import firebase from 'firebase';
-
-const createAccountImg = require('static/undraw_auth_create_account.svg');
-const signinImg = require('static/undraw_auth_sign_in.svg');
+import createAccountImg from 'static/undraw_auth_create_account.svg';
+import signinImg from 'static/undraw_auth_sign_in.svg';
 
 const Container = styled.div`
   display: flex;
@@ -33,20 +32,24 @@ const Image = styled.img`
   }
 `;
 
-type AuthState = {
+interface AuthState {
   email: string;
   password: string;
-};
-
-type AuthProps = {
-  firebaseInstance: Firebase;
-  location: any;
 }
 
-type FirebaseAuthError = {
+interface AuthProps {
+  firebaseInstance: Firebase;
+  location: {
+    state: {
+      isNewAccount: boolean;
+    };
+  };
+}
+
+interface FirebaseAuthError {
   code: string;
   message: string;
-};
+}
 
 type UserCredential = firebase.auth.UserCredential;
 
@@ -61,6 +64,7 @@ class Auth extends Component<AuthProps, AuthState> {
     const { type, value } = e.currentTarget;
 
     this.setState(
+      // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
       { [type]: value } as Pick<AuthState, keyof AuthState>
     );
   };

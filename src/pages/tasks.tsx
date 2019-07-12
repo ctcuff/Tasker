@@ -3,13 +3,13 @@ import Heading from 'layouts/Heading';
 import { Firebase, wrapWithFirebase } from 'components/FirebaseContext';
 import firebase from 'firebase';
 
-type TaskProps = {
+interface TaskProps {
   firebaseInstance: Firebase;
-};
+}
 
-type TaskState = {
+interface TaskState {
   user: firebase.User;
-};
+}
 
 class Tasks extends Component<TaskProps, TaskState> {
   private listener: firebase.Unsubscribe;
