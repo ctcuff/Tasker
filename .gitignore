@@ -75,4 +75,4 @@ context.tsx
 test-template.html
 test-component.ts
 
-src/components/config.js
+src/components/config.tsx

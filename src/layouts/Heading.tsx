@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { graphql, StaticQuery } from 'gatsby';
@@ -21,9 +20,9 @@ const StyledHeading = styled.h1`
 `;
 
 type HeadingProps = {
-  children: any[],
-  className?: string,
-  subtext?: string
+  children: any | any[];
+  className?: string;
+  subtext?: string;
 };
 
 const Heading = ({ children, className, subtext }: HeadingProps) => (
@@ -44,10 +43,10 @@ const Heading = ({ children, className, subtext }: HeadingProps) => (
             <title>{siteMetadata.title}</title>
           </Helmet>
           <Header>
-            <StyledHeading onClick={() => window.location = '/'}>
+            <StyledHeading onClick={() => (window.location.href = '/')}>
               {siteMetadata.title}
             </StyledHeading>
-            {subtext ? <SubTitle>{subtext}</SubTitle> : null}
+            {subtext && <SubTitle>{subtext}</SubTitle>}
           </Header>
         </div>
       )}

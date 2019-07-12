@@ -5,25 +5,41 @@ import Button from 'react-bootstrap/Button';
 import { Image, FlexContainer, FlexInner } from 'components/styles/index.style';
 import SlidingText from 'components/SlidingText';
 import Heading from 'layouts/Heading';
-import { wrapWithFirebase } from 'components/FirebaseContext';
-import image from 'static/undraw_task.svg';
+import { wrapWithFirebase, Firebase } from 'components/FirebaseContext';
+import firebase from 'firebase';
 
-const ButtonGroup = ({ isLoggedIn, onSignOutClick, onViewTaskClick }) =>
-  isLoggedIn ? (
+const image = require('static/undraw_task.svg');
+
+type ButtonProps = {
+  isLoggedIn: boolean;
+  onSignOutClick: () => void;
+  onViewTasksClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+};
+
+type IndexProps = {
+  firebaseInstance: Firebase;
+};
+
+type IndexState = {
+  user: firebase.User;
+};
+
+const ButtonGroup = (props: ButtonProps) =>
+  props.isLoggedIn ? (
     <div>
       <Link to="/tasks">
-        <Button variant="light" onClick={onViewTaskClick}>
+        <Button variant="light" onClick={props.onViewTasksClick}>
           View tasks
         </Button>
       </Link>
-      <Button variant="light" onClick={onSignOutClick}>
+      <Button variant="light" onClick={props.onSignOutClick}>
         Sign out
       </Button>
     </div>
   ) : (
     <div>
       <Link to="/auth" state={{ isNewAccount: true }}>
-        <Button className="btn-light" variant="light">Get started</Button>
+        <Button variant="light">Get started</Button>
       </Link>
       <Link to="/auth" state={{ isNewAccount: false }}>
         <Button variant="light">Sign in</Button>
@@ -31,18 +47,16 @@ const ButtonGroup = ({ isLoggedIn, onSignOutClick, onViewTaskClick }) =>
     </div>
   );
 
-class Index extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: null
-    };
-    console.log(this.props);
-  }
+class Index extends Component<IndexProps, IndexState> {
+  private listener: firebase.Unsubscribe;
+
+  state = {
+    user: null
+  };
 
   componentDidMount() {
-    this.listener = this.props.firebaseInstance.auth.onAuthStateChanged(user =>
-      this.setState({ user })
+    this.listener = this.props.firebaseInstance.auth.onAuthStateChanged(
+      (user: firebase.User) => this.setState({ user })
     );
   }
 
@@ -54,7 +68,7 @@ class Index extends Component {
     }
   }
 
-  onViewTasksClick = e => {
+  onViewTasksClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
   };
 
@@ -84,7 +98,7 @@ class Index extends Component {
               <ButtonGroup
                 isLoggedIn={user !== null}
                 onSignOutClick={this.onSignOutClick}
-                onViewTaskClick={this.onViewTasksClick}
+                onViewTasksClick={this.onViewTasksClick}
               />
             </div>
           </FlexInner>

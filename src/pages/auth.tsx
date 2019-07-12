@@ -1,24 +1,13 @@
-// @flow
 import React, { Component } from 'react';
 import Heading from 'layouts/Heading';
 import AuthForm from 'components/AuthForm';
 import { Firebase, wrapWithFirebase } from 'components/FirebaseContext';
 import styled from 'styled-components';
-import createAccountImg from 'static/undraw_auth_create_account.svg';
-import signinImg from 'static/undraw_auth_sign_in.svg';
-import app from 'firebase/app';
-import { breakpointLg, breakpointSm } from '../components/styles/auth.style';
+import { breakpointLg, breakpointSm } from 'components/styles/auth.style';
+import firebase from 'firebase';
 
-type AuthState = {
-  email: string,
-  password: string
-};
-
-type AuthProps = {
-  firebaseInstance: Firebase
-}
-
-type FirebaseUserCredential = app.auth.UserCredential;
+const createAccountImg = require('static/undraw_auth_create_account.svg');
+const signinImg = require('static/undraw_auth_sign_in.svg');
 
 const Container = styled.div`
   display: flex;
@@ -44,57 +33,63 @@ const Image = styled.img`
   }
 `;
 
+type AuthState = {
+  email: string;
+  password: string;
+};
+
+type AuthProps = {
+  firebaseInstance: Firebase;
+  location: any;
+}
+
+type FirebaseAuthError = {
+  code: string;
+  message: string;
+};
+
+type UserCredential = firebase.auth.UserCredential;
+
 class Auth extends Component<AuthProps, AuthState> {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: '',
-      password: ''
-    };
-  }
+  state = {
+    email: '',
+    password: ''
+  };
 
-  onTextChange = ({ target }: any) => {
-    const { type, value } = target;
+  onTextChange = (e: React.FormEvent<HTMLFormElement>): void => {
+    const { type, value } = e.currentTarget;
 
-    // type comes from <input type=""/> and will either
-    // be "email" or "password"
-    this.setState({ [type]: value });
+    this.setState(
+      { [type]: value } as Pick<AuthState, keyof AuthState>
+    );
   };
 
   onAuthButtonClick = (): void => {
     const location = this.props.location.state;
     const firebaseInstance = this.props.firebaseInstance;
-    const newAccount = (location && location.newAccount) || false;
+    const isNewAccount = (location && location.isNewAccount) || false;
     const { email, password } = this.state;
 
     if (!email || !password) {
       return;
     }
 
-    if (newAccount) {
+    if (isNewAccount) {
       firebaseInstance
         .createUserWithEmailAndPassword(email, password)
-        .then((auth: FirebaseUserCredential) => {
-          auth.user.sendEmailVerification()
-            .then(() => alert(`Email sent to ${email}`))
-            .catch(this.handleAuthError);
-        })
+        .then(this.handleUserCreation)
         .catch(this.handleAuthError);
     } else {
       firebaseInstance
         .signInWithEmailAndPassword(email, password)
-        .then((auth: FirebaseUserCredential) => {
-          alert(`Logged in as ${email}`);
-          console.log(auth);
-        })
+        .then(this.handleUserSignIn)
         .catch(this.handleAuthError);
     }
   };
 
-  handleAuthError = ({code, message}) => {
-    console.log(code, message);
-    switch(code) {
+  handleAuthError = ({ code, message }: FirebaseAuthError): void => {
+    switch (code) {
       case 'auth/invalid-email':
         alert('This email is invalid');
         break;
@@ -102,12 +97,30 @@ class Auth extends Component<AuthProps, AuthState> {
         alert(message);
         break;
       case 'auth/network-request-failed':
-        alert("Please check your internet connection and try again");
+        alert('Check your internet connection and try again');
+        break;
+      case 'auth/wrong-password':
+        alert(message);
+        break;
+      case 'auth/user-not-found':
+        alert(message);
         break;
       default:
         alert('An unknown error occurred, please try again');
+        console.log(code, message);
         break;
     }
+  };
+
+  handleUserCreation = (auth: UserCredential): void => {
+    auth.user.sendEmailVerification()
+      .then(() => alert(`Email sent to ${this.state.email}`))
+      .catch(this.handleAuthError);
+  };
+
+  handleUserSignIn = (auth: UserCredential): void => {
+    alert(`Logged in as ${this.state.email}`);
+    console.log(auth);
   };
 
   render() {

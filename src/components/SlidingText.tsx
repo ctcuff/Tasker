@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 
@@ -66,8 +65,8 @@ const SlidingVertical = styled.div`
 `;
 
 type SlidingTextProps = {
-  staticText: string,
-  wordList: string[]
+  staticText: string;
+  wordList: string[];
 };
 
 const SlidingText = ({ staticText, wordList }: SlidingTextProps) => (

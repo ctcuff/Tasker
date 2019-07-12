@@ -1,19 +1,26 @@
 import React, { Component } from 'react';
 import Heading from 'layouts/Heading';
-import { wrapWithFirebase } from 'components/FirebaseContext';
+import { Firebase, wrapWithFirebase } from 'components/FirebaseContext';
+import firebase from 'firebase';
 
-class Tasks extends Component {
+type TaskProps = {
+  firebaseInstance: Firebase;
+};
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: null
-    };
-  }
+type TaskState = {
+  user: firebase.User;
+};
+
+class Tasks extends Component<TaskProps, TaskState> {
+  private listener: firebase.Unsubscribe;
+
+  state = {
+    user: null
+  };
 
   componentDidMount() {
     this.listener = this.props.firebaseInstance.auth.onAuthStateChanged(
-      user => this.setState({ user: user })
+      (user: firebase.User) => this.setState({ user: user })
     );
   }
 
