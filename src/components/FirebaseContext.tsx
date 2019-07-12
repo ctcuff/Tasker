@@ -3,7 +3,10 @@ import app from 'firebase/app';
 import firebaseConfig from 'components/config';
 import 'firebase/auth';
 
-// Allows access to<FirebaseContext.Consumer> which gives access
+type Auth = app.auth.Auth;
+type UserCredential = app.auth.UserCredential;
+
+// Allows access to <FirebaseContext.Consumer> which gives access
 // to an instance of the Firebase class
 const FirebaseContext = React.createContext(null);
 
@@ -18,7 +21,7 @@ const wrapWithFirebase = Component => props => (
 );
 
 class Firebase {
-  public readonly auth: app.auth.Auth;
+  public readonly auth: Auth;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -27,17 +30,23 @@ class Firebase {
     }
   }
 
-  createUserWithEmailAndPassword(email: string, password: string) {
+  createUserWithEmailAndPassword(
+    email: string,
+    password: string
+  ): Promise<UserCredential> {
     return (
       this.auth && this.auth.createUserWithEmailAndPassword(email, password)
     );
-  };
+  }
 
-  signInWithEmailAndPassword(email: string, password: string) {
+  signInWithEmailAndPassword(
+    email: string,
+    password: string
+  ): Promise<UserCredential> {
     return this.auth && this.auth.signInWithEmailAndPassword(email, password);
-  };
+  }
 
-  signOut() {
+  signOut(): Promise<void> {
     return this.auth && this.auth.signOut();
   }
 }

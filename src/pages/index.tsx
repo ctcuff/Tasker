@@ -10,6 +10,9 @@ import firebase from 'firebase';
 
 const image = require('static/undraw_task.svg');
 
+type FirebaseUser = firebase.User;
+type AuthObserver = firebase.Unsubscribe;
+
 type ButtonProps = {
   isLoggedIn: boolean;
   onSignOutClick: () => void;
@@ -21,7 +24,7 @@ type IndexProps = {
 };
 
 type IndexState = {
-  user: firebase.User;
+  user: FirebaseUser | null;
 };
 
 const ButtonGroup = (props: ButtonProps) =>
@@ -48,23 +51,23 @@ const ButtonGroup = (props: ButtonProps) =>
   );
 
 class Index extends Component<IndexProps, IndexState> {
-  private listener: firebase.Unsubscribe;
+  private authObserver: AuthObserver;
 
   state = {
     user: null
   };
 
   componentDidMount() {
-    this.listener = this.props.firebaseInstance.auth.onAuthStateChanged(
-      (user: firebase.User) => this.setState({ user })
+    this.authObserver = this.props.firebaseInstance.auth.onAuthStateChanged(
+      (user: FirebaseUser) => this.setState({ user })
     );
   }
 
   componentWillUnmount() {
     // Calling the listener makes sure there are no
     // memory leaks when this component is unmounted
-    if (this.listener) {
-      this.listener();
+    if (this.authObserver) {
+      this.authObserver();
     }
   }
 
