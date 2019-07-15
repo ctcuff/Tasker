@@ -28,9 +28,7 @@ const StyledButton = styled(Button)`
 `;
 
 const StyledTextField = styled(TextField)`
-  &:not([type='email']) {
-    margin-top: 42px !important;
-  }
+  margin-top: 42px !important;
 `;
 
 const StyledLink = styled(Link)`
@@ -51,7 +49,7 @@ const AuthForm = (props: FormComponentProps) => (
       label="Email"
       helperText={props.isNewAccount ? 'Your email wil never be shared.' : ''}
       type="email"
-      autoComplete="current-email"
+      autoComplete="email"
       margin="normal"
       // @ts-ignore
       onChange={props.onTextChange}
@@ -61,6 +59,7 @@ const AuthForm = (props: FormComponentProps) => (
       type="password"
       autoComplete="current-password"
       margin="normal"
+      // @ts-ignore
       onChange={props.onTextChange}
     />
     <StyledLink to="/auth" state={{ isNewAccount: !props.isNewAccount }}>
@@ -68,6 +67,11 @@ const AuthForm = (props: FormComponentProps) => (
         ? 'Already registered? Click here'
         : "Don't have an account? Sign up"}
     </StyledLink>
+    {!props.isNewAccount && (
+      <StyledLink to="/reset-password">
+        Forgot password
+      </StyledLink>
+    )}
     <StyledButton
       variant="outlined"
       color="primary"

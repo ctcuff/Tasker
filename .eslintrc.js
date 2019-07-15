@@ -32,6 +32,6 @@ module.exports = {
     '@typescript-eslint/indent': ['error', 2],
     '@typescript-eslint/semi': 'error',
     '@typescript-eslint/explicit-member-accessibility': 'off',
-    '@typescript-eslint/no-object-literal-type-assertion': 'warn'
+    '@typescript-eslint/no-object-literal-type-assertion': 'off'
   }
 };

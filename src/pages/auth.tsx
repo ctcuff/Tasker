@@ -7,6 +7,7 @@ import { breakpointLg, breakpointSm } from 'components/styles/auth.style';
 import firebase from 'firebase';
 import createAccountImg from 'static/undraw_auth_create_account.svg';
 import signinImg from 'static/undraw_auth_sign_in.svg';
+import LoadingOverlay from 'components/LoadingOverlay';
 
 const Container = styled.div`
   display: flex;
@@ -35,6 +36,7 @@ const Image = styled.img`
 interface AuthState {
   email: string;
   password: string;
+  isAuthInProgress: boolean;
 }
 
 interface AuthProps {
@@ -54,19 +56,16 @@ interface FirebaseAuthError {
 type UserCredential = firebase.auth.UserCredential;
 
 class Auth extends Component<AuthProps, AuthState> {
-
   state = {
     email: '',
-    password: ''
+    password: '',
+    isAuthInProgress: false
   };
 
   onTextChange = (e: React.FormEvent<HTMLFormElement>): void => {
     const { type, value } = e.currentTarget;
 
-    this.setState(
-      // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
-      { [type]: value } as Pick<AuthState, keyof AuthState>
-    );
+    this.setState({ [type]: value } as Pick<AuthState, keyof AuthState>);
   };
 
   onAuthButtonClick = (): void => {
@@ -78,6 +77,8 @@ class Auth extends Component<AuthProps, AuthState> {
     if (!email || !password) {
       return;
     }
+
+    this.setState({ isAuthInProgress: true });
 
     if (isNewAccount) {
       firebaseInstance
@@ -93,6 +94,8 @@ class Auth extends Component<AuthProps, AuthState> {
   };
 
   handleAuthError = ({ code, message }: FirebaseAuthError): void => {
+    this.setState({ isAuthInProgress: false });
+
     switch (code) {
       case 'auth/invalid-email':
         alert('This email is invalid');
@@ -109,6 +112,13 @@ class Auth extends Component<AuthProps, AuthState> {
       case 'auth/user-not-found':
         alert(message);
         break;
+      case 'auth/email-already-in-use':
+        alert('This email address is already in use by another account');
+        break;
+      case 'auth/too-many-requests':
+        // TODO: Throttle requests???
+        alert(message);
+        break;
       default:
         alert('An unknown error occurred, please try again');
         console.log(code, message);
@@ -117,14 +127,17 @@ class Auth extends Component<AuthProps, AuthState> {
   };
 
   handleUserCreation = (auth: UserCredential): void => {
-    auth.user.sendEmailVerification()
+    auth.user
+      .sendEmailVerification()
       .then(() => alert(`Email sent to ${this.state.email}`))
-      .catch(this.handleAuthError);
+      .catch(this.handleAuthError)
+      .finally(() => this.setState({ isAuthInProgress: false }));
   };
 
   handleUserSignIn = (auth: UserCredential): void => {
     alert(`Logged in as ${this.state.email}`);
     console.log(auth);
+    window.location.href = '/';
   };
 
   render() {
@@ -137,10 +150,12 @@ class Auth extends Component<AuthProps, AuthState> {
 
     // location.state will be null if the "/auth" route was
     // visited manually
-    const isNewAccount = (location.state && location.state.isNewAccount) || false;
+    const isNewAccount =
+      (location.state && location.state.isNewAccount) || false;
 
     return (
       <Heading subtext={isNewAccount ? 'Create account' : 'Sign in'}>
+        <LoadingOverlay show={this.state.isAuthInProgress} />
         <Container>
           <AuthForm
             onAuthButtonClick={this.onAuthButtonClick}
